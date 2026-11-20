@@ -1,0 +1,15 @@
+checks for fct_orders:
+  - row_count > 0
+  - duplicate_count(order_id) = 0
+  - missing_count(customer_id) = 0
+  - invalid_count(status) = 0:
+      valid values: [PAID, SHIPPED, CANCELLED]
+  - avg(amount) between 50 and 700
+  - freshness(ordered_at) < 2d
+  - schema:
+      fail:
+        when required column missing: [order_id, customer_id, amount]
+
+checks for mart_ca_journalier:
+  - row_count > 0
+  - min(chiffre_affaires) >= 0

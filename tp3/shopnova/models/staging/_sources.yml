@@ -1,0 +1,13 @@
+version: 2
+sources:
+  - name: silver
+    meta:
+      external_location: "../data/silver/{name}.parquet"
+    tables:
+      - name: orders
+        description: "Commandes nettoyées (couche Silver, TP 2)."
+        loaded_at_field: order_ts
+        freshness:
+          warn_after: { count: 2, period: day }
+      - name: customers
+        description: "Référentiel clients."

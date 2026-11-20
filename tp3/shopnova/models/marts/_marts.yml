@@ -1,0 +1,56 @@
+version: 2
+models:
+  - name: fct_orders
+    description: "Fait commande. Grain : une ligne par commande."
+    columns:
+      - name: order_id
+        description: "Identifiant unique de la commande."
+        data_tests: [unique, not_null]
+      - name: customer_id
+        description: "Client ayant passé la commande."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      - name: status
+        description: "Statut de la commande."
+        data_tests:
+          - accepted_values:
+              values: ['PAID', 'SHIPPED', 'CANCELLED']
+      - name: amount
+        description: "Montant de la commande."
+        data_tests:
+          - not_null:
+              config: { severity: warn }
+
+  - name: dim_customers
+    description: "Dimension client. Grain : une ligne par client."
+    config:
+      contract: { enforced: true }
+    columns:
+      - name: customer_id
+        description: "Identifiant unique du client."
+        data_type: integer
+        constraints: [{ type: not_null }]
+        data_tests: [unique]
+      - name: full_name
+        data_type: varchar
+      - name: city
+        data_type: varchar
+      - name: segment
+        data_type: varchar
+        data_tests:
+          - accepted_values:
+              values: ['STANDARD', 'PREMIUM', 'VIP']
+      - name: signup_date
+        data_type: date
+      - name: anciennete_jours
+        data_type: bigint
+
+  - name: dim_date
+    description: "Dimension calendrier. Grain : une ligne par jour."
+    columns:
+      - name: date_day
+        description: "Jour calendaire."
+        data_tests: [unique, not_null]

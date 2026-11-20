@@ -1,0 +1,4 @@
+status,status_label,is_revenue
+PAID,Payée,true
+SHIPPED,Expédiée,true
+CANCELLED,Annulée,false

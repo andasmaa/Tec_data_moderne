@@ -1,0 +1,3 @@
+data_source shopnova:
+  type: duckdb
+  path: shopnova/shopnova.duckdb

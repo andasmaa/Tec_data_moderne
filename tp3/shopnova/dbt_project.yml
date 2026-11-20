@@ -1,0 +1,15 @@
+name: shopnova
+version: "1.0.0"
+profile: shopnova
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+snapshot-paths: ["snapshots"]
+macro-paths: ["macros"]
+
+models:
+  shopnova:
+    staging:      { +materialized: view }
+    intermediate: { +materialized: ephemeral }
+    marts:        { +materialized: table }

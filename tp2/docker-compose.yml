@@ -1,0 +1,45 @@
+services:
+  spark-iceberg:
+    image: tabulario/spark-iceberg
+    container_name: spark-iceberg
+    depends_on: [rest, minio]
+    networks: [iceberg_net]
+    volumes:
+      - ./notebooks:/home/iceberg/notebooks
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+    ports:
+      - "8888:8888"   # Jupyter
+      - "8080:8080"   # interface Spark
+
+  rest:
+    image: apache/iceberg-rest-fixture:1.9.2   # version fixée : la dernière version rejette les tables de métadonnées
+    container_name: iceberg-rest
+    networks: [iceberg_net]
+    ports: ["8181:8181"]
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+      - CATALOG_WAREHOUSE=s3://warehouse/
+      - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
+      - CATALOG_S3_ENDPOINT=http://minio:9000
+
+  minio:
+    image: minio/minio
+    pull_policy: never      # l'image n'est plus téléchargeable : on utilise celle déjà présente
+    container_name: minio-tp2
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_DOMAIN=minio
+    networks:
+      iceberg_net:
+        aliases: [warehouse.minio]
+    ports: ["9000:9000", "9001:9001"]
+    command: ["server", "/data", "--console-address", ":9001"]
+
+networks:
+  iceberg_net:
